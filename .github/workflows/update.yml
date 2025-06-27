@@ -1,0 +1,23 @@
+name: Auto Update
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # JST 5:00
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install requests beautifulsoup4
+      - run: python fetch_and_generate.py
+      - run: |
+          git config user.name 'GitHub Action'
+          git config user.email 'action@github.com'
+          git add index.html
+          git commit -m "Auto update: $(date)"
+          git push
